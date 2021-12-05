@@ -1,0 +1,38 @@
+[
+  {
+    "model": "hotel.hotel",
+    "pk": 1,
+    "fields": {
+      "rating": 3,
+      "name": "Lakewood",
+      "weekday_regular_tax": 110,
+      "weekday_reward_tax": 80,
+      "weekend_regular_tax": 90,
+      "weekend_reward_tax": 80
+    }
+  },
+  {
+    "model": "hotel.hotel",
+    "pk": 2,
+    "fields": {
+      "rating": 4,
+      "name": "Bridgewood",
+      "weekday_regular_tax": 160,
+      "weekday_reward_tax": 110,
+      "weekend_regular_tax": 60,
+      "weekend_reward_tax": 50
+    }
+  },
+  {
+    "model": "hotel.hotel",
+    "pk": 3,
+    "fields": {
+      "rating": 5,
+      "name": "Ridgewood",
+      "weekday_regular_tax": 220,
+      "weekday_reward_tax": 100,
+      "weekend_regular_tax": 150,
+      "weekend_reward_tax": 40
+    }
+  }
+]
