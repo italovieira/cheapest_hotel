@@ -12,13 +12,19 @@ class GetCheapestTests(APITestCase):
     """API test for get cheapest booking hotel endpoint"""
 
     def test_get_cheapest_with_no_input(self):
-        """Make a request without input and expects a error response"""
+        """Make a request without input and expects a not found error"""
         response = self.client.get(GET_CHEAPEST_URL)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_get_cheapest_with_incorrect_input(self):
         """Make a request with incorrect input and expects a error response"""
         request_input = 'qualq:uer&c(oisaaqu)iparad{are}rrado'
+        response = self.client.get(GET_CHEAPEST_URL, {'input': request_input})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_get_cheapest_with_invalid_date(self):
+        """Make a request with invalid date and expects a error response"""
+        request_input = 'Regular: 16Mar2009(mon), 32Mar2009(tues), 18Mar2009(wed)'
         response = self.client.get(GET_CHEAPEST_URL, {'input': request_input})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -84,8 +90,8 @@ class ValidatorTests(APITestCase):
 class ParserTests(APITestCase):
     """Test for the input parsers"""
 
-    def test_parser_input(self):
-        """Test for parse string input"""
+    def test_parser_valid_input(self):
+        """Test for parse valid string input"""
         normalized_input = 'regular:20mar2009(fri),21mar2009(sat),22mar2009(sun)'
         client, dates = parse_input(normalized_input)
 
@@ -95,3 +101,10 @@ class ParserTests(APITestCase):
             datetime(2009, 3, 21),
             datetime(2009, 3, 22),
         ))
+
+    def test_parser_invalid_input(self):
+        """Test for parse invalid string input"""
+        invalid_input = 'regular:20mar2009(fri),32mar2009(sat),22mar2009(sun)'
+        with self.assertRaises(ValueError):
+            _, clients = parse_input(invalid_input)
+            list(clients)
