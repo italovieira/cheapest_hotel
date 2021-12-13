@@ -1,7 +1,8 @@
 from rest_framework import views, status
 from rest_framework.response import Response
 
-from hotel.helpers import validate_input
+from hotel.helpers import parse_input
+from hotel.models import Hotel
 
 
 class CheapestHotelView(views.APIView):
@@ -9,9 +10,10 @@ class CheapestHotelView(views.APIView):
         try:
             input_data = request.query_params['input']
         except KeyError:
-            return Response({}, status.HTTP_404_NOT_FOUND)
+            return Response({'error': "expected 'input' param was not given"}, status.HTTP_404_NOT_FOUND)
         else:
-            if validate_input(input_data):
-                pass
-            else:
+            try:
+                client, dates = parse_input(input_data)
+                return Response({'cheapest': Hotel.objects.cheapest(client, dates)})
+            except:
                 return Response({}, status.HTTP_400_BAD_REQUEST)

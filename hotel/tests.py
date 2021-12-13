@@ -1,15 +1,19 @@
 from datetime import datetime
+
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 
 from hotel.helpers import validate_input, parse_input
+from hotel.models import Hotel
 
 
 GET_CHEAPEST_URL = reverse('hotel:cheapest')
 
 class GetCheapestTests(APITestCase):
     """API test for get cheapest booking hotel endpoint"""
+
+    fixtures = ['initial_data']
 
     def test_get_cheapest_with_no_input(self):
         """Make a request without input and expects a not found error"""
@@ -108,3 +112,33 @@ class ParserTests(APITestCase):
         with self.assertRaises(ValueError):
             _, clients = parse_input(invalid_input)
             list(clients)
+
+
+class HotelManagerGetCheapestTests(APITestCase):
+    """Test for table-level get_cheapest method"""
+
+    fixtures = ['initial_data']
+
+    def test_get_cheapest_lakewood_result(self):
+        """Test for get cheapest with Lakewood as result"""
+        normalized_input = 'regular:16mar2009(mon),17mar2009(tues),18mar2009(wed)'
+        client, dates = parse_input(normalized_input)
+
+        cheapest_hotel_name = Hotel.objects.cheapest(client, dates)
+        self.assertEqual(cheapest_hotel_name, 'Lakewood')
+
+    def test_get_cheapest_bridgewood_result(self):
+        """Test for get cheapest with Bridgewood as result"""
+        normalized_input = 'regular:20mar2009(fri),21mar2009(sat),22mar2009(sun)'
+        client, dates = parse_input(normalized_input)
+
+        cheapest_hotel_name = Hotel.objects.cheapest(client, dates)
+        self.assertEqual(cheapest_hotel_name, 'Bridgewood')
+
+    def test_get_cheapest_ridgewood_result(self):
+        """Make a request and expects Ridgewood as result"""
+        normalized_input = 'reward:26mar2009(thur),27mar2009(fri),28mar2009(sat)'
+        client, dates = parse_input(normalized_input)
+
+        cheapest_hotel_name = Hotel.objects.cheapest(client, dates)
+        self.assertEqual(cheapest_hotel_name, 'Ridgewood')
