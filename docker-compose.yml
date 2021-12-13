@@ -4,4 +4,8 @@ services:
   app:
     build: .
     ports:
-      - 8000:8000
+      - $PORT:$PORT
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - PORT=${PORT}
